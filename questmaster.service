@@ -1,0 +1,18 @@
+[Unit]
+Description=QuestMaster AI Task Manager
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/task-manager
+Environment=PATH=/home/ubuntu/task-manager/venv/bin
+Environment=FLASK_ENV=production
+Environment=SECRET_KEY=questmaster-production-key-2024
+Environment=OPENAI_API_KEY=your-openai-api-key-here
+ExecStart=/home/ubuntu/task-manager/venv/bin/python app.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

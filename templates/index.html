@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuestMaster - AI Task Manager</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/hud.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="hud-container">
+        <!-- Top HUD Bar -->
+        <div class="hud-top">
+            <div class="player-stats">
+                <div class="stat-item">
+                    <i class="fas fa-user"></i>
+                    <span class="stat-label">Level</span>
+                    <span class="stat-value" id="playerLevel">1</span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-star"></i>
+                    <span class="stat-label">XP</span>
+                    <span class="stat-value" id="playerXP">0</span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-trophy"></i>
+                    <span class="stat-label">Completed</span>
+                    <span class="stat-value" id="completedTasks">0</span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-clock"></i>
+                    <span class="stat-label">Active</span>
+                    <span class="stat-value" id="activeTasks">0</span>
+                </div>
+            </div>
+            <div class="hud-title">
+                <h1><i class="fas fa-gamepad"></i> QuestMaster</h1>
+                <p>AI-Powered Task Management</p>
+            </div>
+            <div class="hud-controls">
+                <button class="hud-btn" id="settingsBtn"><i class="fas fa-cog"></i></button>
+                <button class="hud-btn" id="helpBtn"><i class="fas fa-question"></i></button>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="hud-main">
+            <!-- Left Panel - Task Input -->
+            <div class="hud-panel left-panel">
+                <div class="panel-header">
+                    <h2><i class="fas fa-plus-circle"></i> New Quest</h2>
+                </div>
+                <div class="panel-content">
+                    <form id="taskForm" class="quest-form">
+                        <div class="input-group">
+                            <label for="taskInput">Enter your quest:</label>
+                            <textarea id="taskInput" placeholder="Describe your main goal or task..." rows="3" required></textarea>
+                        </div>
+                        
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label for="category">Category:</label>
+                                <select id="category">
+                                    <option value="work">Work</option>
+                                    <option value="personal">Personal</option>
+                                    <option value="learning">Learning</option>
+                                    <option value="health">Health</option>
+                                    <option value="creative">Creative</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label for="difficulty">Difficulty:</label>
+                                <select id="difficulty">
+                                    <option value="easy">Easy</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="hard">Hard</option>
+                                    <option value="epic">Epic</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="dueDate">Due Date (optional):</label>
+                            <input type="date" id="dueDate">
+                        </div>
+                        
+                        <button type="submit" class="quest-btn">
+                            <i class="fas fa-magic"></i> Generate Quest
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Center Panel - Active Quests -->
+            <div class="hud-panel center-panel">
+                <div class="panel-header">
+                    <h2><i class="fas fa-crosshairs"></i> Active Quests</h2>
+                    <div class="panel-controls">
+                        <button class="hud-btn small" id="refreshBtn"><i class="fas fa-sync"></i></button>
+                    </div>
+                </div>
+                <div class="panel-content" id="activeQuests">
+                    <div class="no-quests">
+                        <i class="fas fa-search"></i>
+                        <p>No active quests. Create your first quest to begin!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel - Quest Details -->
+            <div class="hud-panel right-panel">
+                <div class="panel-header">
+                    <h2><i class="fas fa-info-circle"></i> Quest Details</h2>
+                </div>
+                <div class="panel-content" id="questDetails">
+                    <div class="no-selection">
+                        <i class="fas fa-hand-pointer"></i>
+                        <p>Select a quest to view details</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom HUD Bar -->
+        <div class="hud-bottom">
+            <div class="progress-bar">
+                <div class="progress-label">Overall Progress</div>
+                <div class="progress-track">
+                    <div class="progress-fill" id="overallProgress" style="width: 0%"></div>
+                </div>
+                <div class="progress-text" id="progressText">0%</div>
+            </div>
+            <div class="hud-status">
+                <div class="status-item">
+                    <i class="fas fa-bolt"></i>
+                    <span>AI Assistant: Online</span>
+                </div>
+                <div class="status-item">
+                    <i class="fas fa-database"></i>
+                    <span>Data: Synced</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="loading-content">
+                <div class="loading-spinner"></div>
+                <p>AI is generating your quest...</p>
+            </div>
+        </div>
+
+        <!-- Quest Modal -->
+        <div class="quest-modal" id="questModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modalTitle">Quest Generated!</h3>
+                    <button class="close-btn" id="closeModal">&times;</button>
+                </div>
+                <div class="modal-body" id="modalBody">
+                    <!-- Quest details will be populated here -->
+                </div>
+                <div class="modal-footer">
+                    <button class="quest-btn secondary" id="cancelQuest">Cancel</button>
+                    <button class="quest-btn primary" id="acceptQuest">Accept Quest</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/hud.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/quest.js') }}"></script>
+</body>
+</html>
